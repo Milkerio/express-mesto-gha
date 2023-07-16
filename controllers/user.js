@@ -6,9 +6,14 @@ module.exports.getAllUsers = (req, res) => {
   .catch((err) => res.status(500).send({message: 'Произошла ошибка.'}))
 }
 module.exports.getUserById = (req, res) => {
-  User.findById(req.body._id)
+  User.findById(req.params._id)
   .then((user) => {
-    res.send({data: user});
+    if(!user){
+      res.status(400).send({message: 'Пользователь не найден.'})
+    }
+    else{
+      res.send({data: user});
+    }
   })
   .catch((err) => {
     if(err.name === 'CastError'){
