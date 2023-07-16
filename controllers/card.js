@@ -7,8 +7,8 @@ module.exports.getAllCards = (req, res) => {
 }
 module.exports.createCard = (req, res) => {
   const {name, link} = req.body;
-  const owner = req.user._id;
-  Card.create({name, link, owner})
+  const { _id } = req.user;
+  Card.create({name, link, owner: _id})
   .then((card) => res.send(card))
   .catch((err) => {
     if(err.name === 'ValidationError'){
@@ -42,10 +42,15 @@ module.exports.deleteCard = (req, res) => {
 }
 module.exports.likeCard = (req, res) => {
   Card.findByIdAndUpdate(req.params.cardId, {$addToSet: {likes: req.user._id}}, { new: true })
-  .then((card) => res.send(card))
+  .then((card) => {
+    if(!card){
+      res.status(404).send({message: 'Карточка не найдена.'})
+    }
+    res.send(card)
+  })
   .catch((err) => {
     if(err.name === 'CastError'){
-      res.status(404).send({ message: 'Карточка не найдена.'})
+      res.status(400).send({ message: 'Карточка не найдена.'})
     }
     else {
       res.status(500).send({message: 'Произошла ошибка на сервере.'})
@@ -54,7 +59,12 @@ module.exports.likeCard = (req, res) => {
 }
 module.exports.dislikeCard = (req, res) => {
   Card.findByIdAndUpdate(req.params.cardId, {$pull: { likes: req.user._id } }, { new: true })
-  .then((card) => res.send(card))
+  .then((card) => {
+    if(!card){
+      res.status(404).send({message: 'Карточка не найдена.'})
+    }
+    res.send(card)
+  })
   .catch((err) => {
     if(err.name === 'CastError'){
       res.status(404).send({ message: 'Карточка не найдена.'})

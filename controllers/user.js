@@ -9,7 +9,7 @@ module.exports.getUserById = (req, res) => {
   User.findById(req.params.userId)
   .then((user) => {
     if(!user){
-      res.status(400).send({message: 'Пользователь не найден.'})
+      res.status(404).send({message: 'Пользователь не найден.'})
     }
     else{
       res.send({data: user});
@@ -17,7 +17,7 @@ module.exports.getUserById = (req, res) => {
   })
   .catch((err) => {
     if(err.name === 'CastError'){
-      res.status(404).send({ message: 'Пользователь не найден.'})
+      res.status(400).send({ message: 'Пользователь не найден.'})
     }
     else {
       res.status(500).send({message: 'Произошла ошибка на сервере.'})
@@ -40,7 +40,7 @@ module.exports.createUser = (req, res) => {
 module.exports.updateProfile = (req, res) => {
   const {name, about} = req.body;
   const owner = req.user._id;
-  User.findByIdAndUpdate(owner, {name, about})
+  User.findByIdAndUpdate({name, about}, owner)
   .then((user) => res.send({data: user}))
   .catch((err) => {
     if(err.name === 'ValidationError'){
@@ -54,7 +54,7 @@ module.exports.updateProfile = (req, res) => {
 module.exports.updateAvatar = (req, res) => {
   const {avatar} = req.body;
   const owner = req.user._id;
-  User.findByIdAndUpdate(owner, {avatar})
+  User.findByIdAndUpdate({avatar}, owner)
   .then((user) => res.send({data: user}))
   .catch((err) => {
     if(err.name === 'ValidationError'){
