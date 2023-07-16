@@ -40,7 +40,7 @@ module.exports.createUser = (req, res) => {
 module.exports.updateProfile = (req, res) => {
   const {name, about} = req.body;
   const owner = req.user._id;
-  User.findByIdAndUpdate({name, about}, owner)
+  User.findByIdAndUpdate({name, about, owner})
   .then((user) => res.send({data: user}))
   .catch((err) => {
     if(err.name === 'ValidationError'){
@@ -54,7 +54,7 @@ module.exports.updateProfile = (req, res) => {
 module.exports.updateAvatar = (req, res) => {
   const {avatar} = req.body;
   const owner = req.user._id;
-  User.findByIdAndUpdate({avatar}, owner)
+  User.findByIdAndUpdate({avatar, owner})
   .then((user) => res.send({data: user}))
   .catch((err) => {
     if(err.name === 'ValidationError'){
