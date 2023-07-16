@@ -15,7 +15,8 @@ app.use((req, res, next) => {
   req.user ={
     _id: '64b30eab77a279e45ef51cb5'
   };
-})
+  next();
+});
 app.use('/', require('./routes/card'));
 
 
