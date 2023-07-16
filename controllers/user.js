@@ -6,7 +6,7 @@ module.exports.getAllUsers = (req, res) => {
   .catch((err) => res.status(500).send({message: 'Произошла ошибка.'}))
 }
 module.exports.getUserById = (req, res) => {
-  User.findById(req.params._id)
+  User.findById(req.body._id)
   .then((user) => {
     res.send({data: user});
   })
