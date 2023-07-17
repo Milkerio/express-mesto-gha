@@ -19,27 +19,26 @@ module.exports.createCard = (req, res) => {
     }
   })
 }
-module.exports.deleteCard = (req, res) => {
-  Card.findById(req.params.cardId)
-  .orFail(() => {
-    res.status(404).send('Карточка не найдена.')
-  })
+module.exports.deleteCard = (req, res, next) => {
+  Card.findByIdAndRemove(req.params.cardId)
   .then((card) => {
-    if(!card.owner.toString() === req.user._id){
-      res.status(400).send('Нельзя удалять чужие карточки.')
+    if(card.owner.toString() === req.user._id){
+      Card.deleteOne(card)
+      .then((cards) => {
+        res.status(200).send({data: cards})
+      })
+      .catch(next);
     }
-    else {
-      Сard.deleteOne(card)
-      .then(() => res.status(200).send({data: card}))
-      .catch((err) => res.send(`Произошла ошибка ${err}`))
+    else{
+      res.send('Нельзя удалять чужие карточки.')
     }
   })
   .catch((err) => {
     if(err.name === 'CastError'){
-      res.status(400).send({ message: 'Карточка не найдена.'})
+      res.status(400).send('Некорректные данные карточки.')
     }
-    else {
-      res.status(500).send({message: 'Произошла ошибка на сервере.'})
+    else{
+      res.status(500).send('Ошибка на сервере.')
     }
   })
 }
