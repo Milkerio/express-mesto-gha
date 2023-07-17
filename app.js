@@ -9,17 +9,15 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use((req, res, next) => {
   req.user = {
-    _id: '64b30eab77a279e45ef51cb5'
+    _id: '64b30eab77a279e45ef51cb5',
   };
   next();
 });
-
-
-
 app.use('/', require('./routes/user'));
 app.use('/', require('./routes/card'));
+
 app.use('*', (req, res) => {
-  res.status(404).send({message : "Данного пути не существует."})
-})
+  res.status(404).send({ message: 'Данного пути не существует.' });
+});
 
 app.listen(PORT);
