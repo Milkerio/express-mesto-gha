@@ -20,8 +20,12 @@ module.exports.createCard = (req, res) => {
   })
 }
 module.exports.deleteCard = (req, res, next) => {
-  Card.findByIdAndRemove(req.params.cardId)
+  Card.findById(req.params.cardId)
   .then((card) => {
+    if(!card){
+      res.status(404).send({message: 'Карточка не существует.'});
+      return;
+    }
     if(card.owner.toString() === req.user._id){
       Card.deleteOne(card)
       .then((cards) => {
@@ -35,7 +39,7 @@ module.exports.deleteCard = (req, res, next) => {
   })
   .catch((err) => {
     if(err.name === 'CastError'){
-      res.status(400).send('Некорректные данные карточки.')
+      res.status(400).send({message: 'Некорректные данные карточки.'})
     }
     else{
       res.status(500).send('Ошибка на сервере.')
