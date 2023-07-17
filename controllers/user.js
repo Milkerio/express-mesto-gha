@@ -53,7 +53,7 @@ module.exports.updateProfile = (req, res) => {
 }
 module.exports.updateAvatar = (req, res) => {
   const {avatar} = req.body;
-  const owner = '64b30eab77a279e45ef51cb5';
+  const owner = req.user._id;
   User.findByIdAndUpdate(owner, {avatar}, {new: true, runValidators: true})
   .then((user) => res.send({data: user}))
   .catch((err) => {
