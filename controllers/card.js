@@ -22,16 +22,16 @@ module.exports.createCard = (req, res) => {
 module.exports.deleteCard = (req, res) => {
   Card.findByIdAndRemove(req.params.cardId)
   .then((card) => {
-    if(!card.owner.toString() === req.user._id){
+    if(!card){
+      res.status(404).send('Данная карточка не найдена.')
+    }
+    else if(!card.owner.toString() === req.user._id){
       res.status(400).send('Нельзя удалять чужие карточки.')
     }
     else {
       Сard.deleteOne(card)
       .then((cards) => res.status(200).send({data: cards}))
       .catch((err) => res.send(`Произошла ошибка ${err}`))
-    }
-    if(!card){
-      res.status(404).send('Данная карточка не существует.')
     }
   })
   .catch((err) => {
