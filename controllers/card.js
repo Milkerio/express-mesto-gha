@@ -20,17 +20,17 @@ module.exports.createCard = (req, res) => {
   })
 }
 module.exports.deleteCard = (req, res) => {
-  Card.findByIdAndRemove(req.params.cardId)
+  Card.findById(req.params.cardId)
+  .orFail(() => {
+    res.status(404).send('Карточка не найдена.')
+  })
   .then((card) => {
-    if(!card){
-      res.status(404).send('Данная карточка не найдена.')
-    }
-    else if(!card.owner.toString() === req.user._id){
+    if(!card.owner.toString() === req.user._id){
       res.status(400).send('Нельзя удалять чужие карточки.')
     }
     else {
       Сard.deleteOne(card)
-      .then((cards) => res.status(200).send({data: cards}))
+      .then(() => res.status(200).send({data: card}))
       .catch((err) => res.send(`Произошла ошибка ${err}`))
     }
   })
