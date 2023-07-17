@@ -22,13 +22,14 @@ module.exports.createCard = (req, res) => {
 module.exports.deleteCard = (req, res) => {
   Card.findByIdAndRemove(req.params.cardId)
   .then((card) => {
-    if(card.owner === req.user._id){
-      card.deleteOne(card)
-      .then((cards) => res.send({data: cards}))
-      .catch((err) => res.send(`Произошла ошибка ${err}`))
+    if(!card.owner === req.user._id){
+      res.status(400).send('Нельзя удалять чужие карточки.')
+
     }
     else {
-      res.status(400).send('Нельзя удалять чужие карточки.')
+      Сard.deleteOne(card)
+      .then((cards) => res.send({data: cards}))
+      .catch((err) => res.send(`Произошла ошибка ${err}`))
     }
   })
   .catch((err) => {
@@ -61,13 +62,13 @@ module.exports.dislikeCard = (req, res) => {
   Card.findByIdAndUpdate(req.params.cardId, {$pull: { likes: req.user._id } }, { new: true })
   .then((card) => {
     if(!card){
-      res.status(400).send({message: 'Карточка не найдена.'})
+      res.status(404).send({message: 'Карточка не найдена.'})
     }
     res.send(card)
   })
   .catch((err) => {
     if(err.name === 'CastError'){
-      res.status(404).send({ message: 'Карточка не найдена.'})
+      res.status(400).send({ message: 'Карточка не найдена.'})
     }
     else {
       res.status(500).send({message: 'Произошла ошибка на сервере.'})
