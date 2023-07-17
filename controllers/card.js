@@ -30,6 +30,9 @@ module.exports.deleteCard = (req, res) => {
       .then((cards) => res.status(200).send({data: cards}))
       .catch((err) => res.send(`Произошла ошибка ${err}`))
     }
+    if(!card){
+      res.status(404).send('Данная карточка не существует.')
+    }
   })
   .catch((err) => {
     if(err.name === 'CastError'){
