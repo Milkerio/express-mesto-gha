@@ -17,9 +17,9 @@ app.use((req, res, next) => {
 
 
 app.use('/', require('./routes/user'));
-
-
 app.use('/', require('./routes/card'));
-
+app.use('*', (req, res) => {
+  res.status(404).send({message : "Данного пути не существует."})
+})
 
 app.listen(PORT);

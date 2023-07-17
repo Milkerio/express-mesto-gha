@@ -24,11 +24,11 @@ module.exports.deleteCard = (req, res) => {
   .then((card) => {
     if(card.owner === req.user._id){
       card.deleteOne(card)
-      .then((cards) => res.send(cards))
+      .then((cards) => res.send({data: cards}))
       .catch((err) => res.send(`Произошла ошибка ${err}`))
     }
     else {
-      res.send('Нельзя удалять чужие карточки.')
+      res.status(400).send('Нельзя удалять чужие карточки.')
     }
   })
   .catch((err) => {
@@ -61,7 +61,7 @@ module.exports.dislikeCard = (req, res) => {
   Card.findByIdAndUpdate(req.params.cardId, {$pull: { likes: req.user._id } }, { new: true })
   .then((card) => {
     if(!card){
-      res.status(404).send({message: 'Карточка не найдена.'})
+      res.status(400).send({message: 'Карточка не найдена.'})
     }
     res.send(card)
   })
