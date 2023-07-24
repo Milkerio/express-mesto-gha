@@ -89,9 +89,10 @@ module.exports.login = (req, res, next) => {
     .then((user) => {
       const token = jwt.sign(
         { _id: user._id },
+        'secret',
         { expiresIn: '7d' },
       );
-      res.send(token);
+      res.send({ token });
     })
     .catch(() => {
       next(new ErrorUnauthorized('Вы не авторизовались.'));
