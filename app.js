@@ -3,7 +3,6 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const { celebrate, Joi, errors } = require('celebrate');
 const { createUser, login } = require('./controllers/user');
-const { errorsHandler } = require('./middlewares/errorsHandler');
 const auth = require('./middlewares/auth');
 
 const { PORT = 3000 } = process.env;
@@ -34,5 +33,16 @@ app.use('*', (req, res) => {
   res.status(404).send({ message: 'Данного пути не существует.' });
 });
 app.use(errors());
-app.use(errorsHandler);
+app.use((err, req, res, next) => {
+  const { statusCode = 500, message } = err;
+
+  res
+    .status(statusCode)
+    .send({
+      message: statusCode === 500
+        ? 'На сервере произошла ошибка'
+        : message,
+    });
+  next();
+});
 app.listen(PORT);

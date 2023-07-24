@@ -37,6 +37,9 @@ module.exports.createUser = (req, res, next) => {
     email,
     password,
   } = req.body;
+  if (!email || !password) {
+    throw new ErrorValidation('Email и пароль обязательны!');
+  }
   bcrypt.hash(password, 10)
     .then((hash) => User.create({
       name,
@@ -81,31 +84,17 @@ module.exports.updateAvatar = (req, res, next) => {
 };
 module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
-  User.findOne({ email }).select('+password')
+
+  return User.findUserByCredentials(email, password)
     .then((user) => {
-      if (!user) {
-        throw new ErrorNotFound('Пользователь не найден.');
-      } else {
-        bcrypt.compare(password, user.password)
-          .then((isValid) => {
-            if (isValid) {
-              const token = jwt.sign({ _id: user._id });
-              res.cookie('jwt', token, {
-                httpOnly: true,
-                expiresIn: '7d',
-              });
-              res.send(user);
-            } else {
-              throw new ErrorUnauthorized('Вы не авторизовались.');
-            }
-          })
-          .catch(() => {
-            next(ErrorDefault('Произошла ошибка на сервере.'));
-          });
-      }
+      const token = jwt.sign(
+        { _id: user._id },
+        { expiresIn: '7d' },
+      );
+      res.send(token);
     })
     .catch(() => {
-      next(ErrorDefault('Произошла ошибка на сервере.'));
+      next(new ErrorUnauthorized('Вы не авторизовались.'));
     });
 };
 module.exports.getUserInfo = (req, res, next) => {
