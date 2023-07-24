@@ -41,22 +41,26 @@ module.exports.createUser = (req, res, next) => {
     throw new ErrorValidation('Email и пароль обязательны!');
   }
   bcrypt.hash(password, 10)
-    .then((hash) => User.create({
-      name,
-      about,
-      avatar,
-      email,
-      password: hash,
-    }))
-    .then((user) => res.send({ data: user }))
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        next(new ErrorValidation('Переданы некорректные данные.'));
-      } if (err.code === 11000) {
-        next(new ErrorConflict('Пользователь с данным email уже существует.'));
-      }
-      next(err);
-    });
+    .then((hash) => {
+      User.create({
+        name, about, avatar, email, password: hash,
+      })
+        .then(() => res.status(200).send({
+          data: {
+            name, about, avatar, email,
+          },
+        }))
+        .catch((err) => {
+          if (err.code === 11000) {
+            next(new ErrorConflict('Пользователь с данным email уже существует.'));
+          }
+          if (err.name === 'ValidationError') {
+            next(new ErrorValidation('Переданы некорретные данные.'));
+          }
+          next(err);
+        });
+    })
+    .catch(next);
 };
 module.exports.updateProfile = (req, res, next) => {
   const { name, about } = req.body;

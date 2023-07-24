@@ -1,5 +1,6 @@
 const { celebrate, Joi } = require('celebrate');
 const router = require('express').Router();
+const { validateUrl } = require('../validation/urlValidation');
 
 const {
   getAllUsers,
@@ -20,7 +21,7 @@ router.patch('/users/me', celebrate({
 }), updateProfile);
 router.patch('/users/me/avatar', celebrate({
   body: Joi.object().keys({
-    avatar: Joi.string().required(),
+    avatar: Joi.string().required().custom(validateUrl),
   }),
 }), updateAvatar);
 
