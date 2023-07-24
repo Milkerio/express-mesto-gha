@@ -5,4 +5,4 @@ const errorsHandler = (err, req, res, next) => {
   res.status(errorStatus).send({ errorMessage });
   next();
 };
-module.exports = errorsHandler;
+module.exports = { errorsHandler };

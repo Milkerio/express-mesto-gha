@@ -4,7 +4,7 @@ const User = require('../models/user');
 const ErrorValidation = require('../errors/errorValidation');
 const ErrorNotFound = require('../errors/errorNotFound');
 const ErrorDefault = require('../errors/errorDefault');
-const ErrorUnathorized = require('../errors/errorUnathorized');
+const ErrorUnauthorized = require('../errors/errorUnauthorized');
 const ErrorConflict = require('../errors/errorConflict');
 
 module.exports.getAllUsers = (req, res, next) => {
@@ -99,7 +99,7 @@ module.exports.login = (req, res, next) => {
               });
               res.send(user);
             } else {
-              throw new ErrorUnathorized('Вы не авторизовались.');
+              throw new ErrorUnauthorized('Вы не авторизовались.');
             }
           })
           .catch(() => {
