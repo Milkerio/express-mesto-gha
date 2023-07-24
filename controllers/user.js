@@ -10,7 +10,7 @@ const ErrorConflict = require('../errors/errorConflict');
 module.exports.getAllUsers = (req, res, next) => {
   User.find({})
     .then((users) => res.send({ data: users }))
-    .catch(() => next(ErrorDefault('Произошла ошибка на сервере.')));
+    .catch(next);
 };
 module.exports.getUserById = (req, res, next) => {
   User.findById(req.params.userId)
@@ -24,9 +24,9 @@ module.exports.getUserById = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new ErrorValidation('Переданы некорректные данные.'));
-      } else {
-        next(ErrorDefault('Произошла ошибка на сервере.'));
+        return;
       }
+      next(err);
     });
 };
 module.exports.createUser = (req, res, next) => {
@@ -49,11 +49,10 @@ module.exports.createUser = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new ErrorValidation('Переданы некорректные данные.'));
-      } else if (err.code === 11000) {
+      } if (err.code === 11000) {
         next(new ErrorConflict('Пользователь с данным email уже существует.'));
-      } else {
-        next(ErrorDefault('Произошла ошибка на сервере.'));
       }
+      next(err);
     });
 };
 module.exports.updateProfile = (req, res, next) => {
@@ -64,9 +63,8 @@ module.exports.updateProfile = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new ErrorValidation('Переданы некорректные данные.'));
-      } else {
-        next(ErrorDefault('Произошла ошибка на сервере.'));
       }
+      next(err);
     });
 };
 module.exports.updateAvatar = (req, res, next) => {
@@ -77,9 +75,8 @@ module.exports.updateAvatar = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new ErrorValidation('Переданы некорректные данные.'));
-      } else {
-        next(ErrorDefault('Произошла ошибка на сервере.'));
       }
+      next(err);
     });
 };
 module.exports.login = (req, res, next) => {
@@ -92,7 +89,7 @@ module.exports.login = (req, res, next) => {
         bcrypt.compare(password, user.password)
           .then((isValid) => {
             if (isValid) {
-              const token = jwt.sign({ _id: req.user._id });
+              const token = jwt.sign({ _id: user._id });
               res.cookie('jwt', token, {
                 httpOnly: true,
                 expiresIn: '7d',
@@ -117,7 +114,7 @@ module.exports.getUserInfo = (req, res, next) => {
       if (!user) {
         throw new ErrorNotFound('Пользователь не найден.');
       } else {
-        res.send(user);
+        res.send({ data: user });
       }
     })
     .catch(() => {
