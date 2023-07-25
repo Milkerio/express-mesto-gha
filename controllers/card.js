@@ -52,7 +52,7 @@ module.exports.likeCard = (req, res, next) => {
       if (!card) {
         throw new ErrorNotFound('Карточка не найдена.');
       }
-      res.send(card);
+      res.send({ data: card });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
@@ -68,7 +68,7 @@ module.exports.dislikeCard = (req, res, next) => {
       if (!card) {
         throw new ErrorNotFound('Карточка не найдена.');
       }
-      res.send(card);
+      res.send({ data: card });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
