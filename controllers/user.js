@@ -107,13 +107,13 @@ module.exports.login = (req, res, next) => {
     });
 };
 module.exports.getUserInfo = (req, res, next) => {
-  User.findById(req.user._id)
+  const ownerId = req.user._id;
+  User.findById(ownerId)
     .then((user) => {
       if (!user) {
         throw new ErrorNotFound('Пользователь не найден.');
-      } else {
-        res.send({ data: user });
       }
+      res.send({ data: user });
     })
     .catch(() => {
       next(ErrorDefault('Произошла ошибка на сервере.'));

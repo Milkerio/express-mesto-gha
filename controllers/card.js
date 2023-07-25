@@ -2,6 +2,7 @@ const Card = require('../models/card');
 const ErrorValidation = require('../errors/errorValidation');
 const ErrorNotFound = require('../errors/errorNotFound');
 const ErrorDefault = require('../errors/errorDefault');
+const ErrorForbidden = require('../errors/errorForbidden');
 
 module.exports.getAllCards = (req, res, next) => {
   Card.find({})
@@ -34,7 +35,7 @@ module.exports.deleteCard = (req, res, next) => {
           })
           .catch(next);
       } else {
-        res.send('Нельзя удалять чужие карточки.');
+        throw new ErrorForbidden('Нельзя удалять чужие карточки.');
       }
     })
     .catch((err) => {
@@ -50,9 +51,8 @@ module.exports.likeCard = (req, res, next) => {
     .then((card) => {
       if (!card) {
         throw new ErrorNotFound('Карточка не найдена.');
-      } else {
-        res.send(card);
       }
+      res.send(card);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
@@ -67,9 +67,8 @@ module.exports.dislikeCard = (req, res, next) => {
     .then((card) => {
       if (!card) {
         throw new ErrorNotFound('Карточка не найдена.');
-      } else {
-        res.send(card);
       }
+      res.send(card);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
