@@ -13,7 +13,7 @@ module.exports.createCard = (req, res, next) => {
   const { name, link } = req.body;
 
   Card.create({ name, link, owner: req.user._id })
-    .then((card) => res.send(card))
+    .then((card) => res.status(201).send(card))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new ErrorValidation('Переданы некорректные данные.'));
@@ -41,6 +41,7 @@ module.exports.deleteCard = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new ErrorValidation('Переданы некорректные данные.'));
+        return;
       }
       next(err);
     });
@@ -56,6 +57,7 @@ module.exports.likeCard = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new ErrorValidation('Переданы некорректные данные.'));
+        return;
       }
       next(err);
     });
@@ -71,6 +73,7 @@ module.exports.dislikeCard = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new ErrorValidation('Переданы некорректные данные.'));
+        return;
       }
       next(err);
     });

@@ -51,9 +51,11 @@ module.exports.createUser = (req, res, next) => {
         .catch((err) => {
           if (err.code === 11000) {
             next(new ErrorConflict('Пользователь с данным email уже существует.'));
+            return;
           }
           if (err.name === 'ValidationError') {
             next(new ErrorValidation('Переданы некорретные данные.'));
+            return;
           }
           next(err);
         });
@@ -68,6 +70,7 @@ module.exports.updateProfile = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new ErrorValidation('Переданы некорректные данные.'));
+        return;
       }
       next(err);
     });
@@ -76,10 +79,11 @@ module.exports.updateAvatar = (req, res, next) => {
   const { avatar } = req.body;
   const owner = req.user._id;
   User.findByIdAndUpdate(owner, { avatar }, { new: true, runValidators: true })
-    .then((user) => res.send({ data: user }))
+    .then((user) => res.status(201).send({ data: user }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new ErrorValidation('Переданы некорректные данные.'));
+        return;
       }
       next(err);
     });
