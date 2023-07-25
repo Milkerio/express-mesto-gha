@@ -16,9 +16,8 @@ module.exports.getUserById = (req, res, next) => {
     .then((user) => {
       if (!user) {
         throw new ErrorNotFound('Пользователь не найден.');
-      } else {
-        res.send({ data: user });
       }
+      res.send({ data: user });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
@@ -106,12 +105,11 @@ module.exports.login = (req, res, next) => {
     });
 };
 module.exports.getUserInfo = (req, res, next) => {
-  const userId = req.user._id;
-  User.findById(userId)
-    .orFail(() => {
-      throw new ErrorNotFound('Пользователь не найден.');
-    })
+  User.findById(req.user._id)
     .then((user) => {
+      if (!user) {
+        throw new ErrorNotFound('Пользователь не найден.');
+      }
       res.send({ data: user });
     })
     .catch(next);
