@@ -115,6 +115,10 @@ module.exports.getUserInfo = (req, res, next) => {
       res.send({ data: user });
     })
     .catch((err) => {
+      if (err.name === 'CastError') {
+        next(new ErrorValidation('Некорректный id пользователя.'));
+        return;
+      }
       next(err);
     });
 };
