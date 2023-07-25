@@ -107,8 +107,8 @@ module.exports.login = (req, res, next) => {
     });
 };
 module.exports.getUserInfo = (req, res, next) => {
-  const ownerId = req.user._id;
-  User.findById(ownerId)
+  const userId = req.user._id;
+  User.findById(userId)
     .then((user) => {
       if (!user) {
         throw new ErrorNotFound('Пользователь не найден.');
