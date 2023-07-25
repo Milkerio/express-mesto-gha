@@ -3,7 +3,6 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const ErrorValidation = require('../errors/errorValidation');
 const ErrorNotFound = require('../errors/errorNotFound');
-const ErrorDefault = require('../errors/errorDefault');
 const ErrorUnauthorized = require('../errors/errorUnauthorized');
 const ErrorConflict = require('../errors/errorConflict');
 
@@ -115,7 +114,7 @@ module.exports.getUserInfo = (req, res, next) => {
       }
       res.send({ data: user });
     })
-    .catch(() => {
-      next(ErrorDefault('Произошла ошибка на сервере.'));
+    .catch((err) => {
+      next(err);
     });
 };
